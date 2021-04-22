@@ -1,4 +1,4 @@
-# Junit 测试框架
+# Java  Junit4 测试框架
 
 ## 一 Junit4 特性
 
@@ -149,6 +149,150 @@ public class GeometryTest {
     }
 }
 ```
+
+
+
+## 五 超时测试
+
+> Junit 4超时测试（Timeout test）可以被用来测试方法的执行时间。 Junit 4 超时测试可以被用在：
+>
+> - 在测试类的方法上使用 @Timeout 注解
+> - 测试类的所有方法应用 Timeout 规则
+
+```java
+ @Rule
+ public Timeout timeout = new Timeout(1000);
+```
+
+
+
+## 六 期望异常测试
+
+> 开发人员常常使用单元测试来验证的一段儿代码的操作，很多时候单元测试可以检查抛出预期异常( expected exceptions)的代码。
+
+1、@Test（expected …）
+
+```java
+    @Test(expected = NullPointerException.class)
+    public void test() {
+        
+    }
+```
+
+
+
+2、ExpectedException
+
+```java
+@Rule
+public ExpectedException thrown= ExpectedException.none();
+```
+
+
+
+```java
+
+@Test
+public void canVote_throws_IllegalArgumentException_for_zero_age() {
+    Student student = new Student();
+    thrown.expect(NullPointerException.class);
+    thrown.expectMessage("age should be +ve");
+    student.canVote(0);
+}
+```
+
+除了可以设置异常的属性信息之外，这种方法还有一个优点，它可以更加精确的找到异常抛出的位置。在上面的例子中，在构造函数中抛出的未预期的(unexpected) IllegalArgumentException 异常将会引起测试失败，我们希望它在canVote()方法中抛出
+
+
+
+3、 Try/catch with assert/fail
+
+```java
+@Test
+public void canVote_throws_IllegalArgumentException_for_zero_age() {
+    Student student = new Student();
+    try {
+        student.canVote(0);
+    } catch (IllegalArgumentException ex) {
+        assertThat(ex.getMessage(), containsString("age should be +ve"));
+    }
+    fail("expected IllegalArgumentException for non +ve age");
+}
+```
+
+
+
+## 七、优先级测试
+
+> @FixMethodOrder的顺序也并不一定是方法在代码中定义的顺序，这与JVM的实现有关，我猜在class中方法名是保存在一个map中，不同JVM对map的实现不同，导致并不一定是按代码定义顺序的。
+>
+> 我们在写JUnit测试用例时，有时候需要按照定义顺序执行我们的单元测试方法，比如如在测试数据库相关的用例时候要按照测试插入、查询、删除的顺序测试。如果不按照这个顺序测试可能会出现问题，比如删除方法在前面执行，后面的方法就都不能通过测试，因为数据已经被清空了。而JUnit测试时默认的顺序是随机的。所以这时就需要有办法要求JUnit在执行测试方法时按照我们指定的顺序来执行。
+
+@FixMethodOrder 注解参数
+
+| 参数                                                         |
+| ------------------------------------------------------------ |
+| MethodSorters.JVM（按照JVM得到的方法顺序，也就是代码中定义的方法顺序） |
+| MethodSorters.DEFAULT(默认的顺序)                            |
+| MethodSorters.NAME_ASCENDING（按方法名字母顺序执行）         |
+
+
+
+
+
+# Android Junit 单元测试
+
+## 单元测试目的及测试内容
+
+为什么要进行单元测试？
+
+- 提高稳定性，能够明确地了解是否正确的完成开发；
+- 快速反馈bug，跑一遍单元测试用例，定位bug；
+- 在开发周期中尽早通过单元测试检查bug，最小化技术债，越往后可能修复bug的代价会越大，严重的情况下会影响项目进度；
+- 为代码重构提供安全保障，在优化代码时不用担心回归问题，在重构后跑一遍测试用例，没通过说明重构可能是有问题的，更加易于维护。
+
+单元测试要测什么？
+
+- 列出想要测试覆盖的正常、异常情况，进行测试验证;
+- 性能测试，例如某个算法的耗时等等。
+
+
+
+## 单元测试分类
+
+1. 本地测试(Local tests): 只在本地机器JVM上运行，以最小化执行时间，这种单元测试不依赖于Android框架，或者即使有依赖，也很方便使用模拟框架来模拟依赖，以达到隔离Android依赖的目的，模拟框架如google推荐的[Mockito](https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fmockito%2Fmockito)；
+
+   添加依赖：
+
+   ```java
+   dependencies {
+       // Required -- JUnit 4 framework
+       testImplementation 'junit:junit:4.12'
+       // Optional -- Mockito framework（可选，用于模拟一些依赖对象，以达到隔离依赖的效果）
+       testImplementation 'org.mockito:mockito-core:2.19.0'
+   }
+   ```
+
+   单元测试代码存储位置
+
+   ```java
+   app/src
+        ├── androidTestjava (仪器化单元测试、UI测试)
+        ├── main/java (业务代码)
+        └── test/java  (本地单元测试)
+   ```
+
+   
+
+2. 仪器化测试(Instrumented tests): 在真机或模拟器上运行的单元测试，由于需要跑到设备上，比较慢，这些测试可以访问仪器（Android系统）信息，比如被测应用程序的上下文，一般地，依赖不太方便通过模拟框架模拟时采用这种方式。
+
+   
+
+
+
+
+
+
 
 
 
