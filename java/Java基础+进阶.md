@@ -538,9 +538,67 @@ Child c = new Child();
 
 
 
+
+
 ## 第六章 常用基础类
 
+### 6.1 各种包装类
 
+包装类：内部有一个实例变量，保存对应的基本类型的值。内部有一些静态方法和实例方法，方便对数据操作。
+
+装箱：将基本类型转换为包装类的过程
+
+拆箱：将包装类型转换为基本类型的过程
+
+
+
+6.1.1 共同点
+
+1. equals
+
+   equals 用于判断当前传入的对象是否相同。所有包装类都重写了该实现，实际比较用的是其包装类的基本类型值。
+
+2. hashcode
+
+   hashcode 返回一个对象的哈希值，是一个int类型的数，由对象中一般不变的属性映射的来，用于快速区分对象。hashcode 默认实现是将对象的内存地址转化为整数。子类如果重写equals方法，也必须重写hashCode。
+
+3. Comparable
+
+   在小于、等于、大于参数时。分别返回 -1、0、1
+
+4. 包装类和String
+
+   每个包装类都有一个 valueOf（String） 方法，根据字符串表示返回包装类对象，
+
+   静态 parseXXX（String）方法，根据字符串表示返回基本类型值。
+
+5. Number
+
+   6中数值类型包装类有一个共同的父类，Number是一个抽象类，通过其中定义的方法， 包装类实例可以返回任意的基本数值类型。
+
+6. 不可变性
+
+   包装类都是不可变类
+
+   - 所有包装类都被声明为 final ，不能被继承
+   - 内部基本类型值都是私有的，且声明为了 final
+   - 没有定义setter 方法
+
+   
+
+### 6.2 String 和 StringBuilder
+
+
+
+### 6.3 Arrays
+
+
+
+### 6.4 日期和时间处理
+
+
+
+### 6.5 随机
 
 
 
@@ -584,11 +642,71 @@ Child c = new Child();
 
 ```groovy
 dependencies{
-	implementation "org.apache.poi:poi:4.0.0"
+	implementation "org.apache.poi:poi-excelant:4.1.0"
+}
+```
+
+##### 创建 sheet
+
+XSSFWorkbook类：可以对对Excel进行读写，它兼容.xls和.xlsx格式，支持office的2007或者更高版本，
+HSSFWorkbook类：可以对对Excel进行读写，它兼容.xls格式，不支持高版本的office
+所以一般我们会使用XSSFWorkbook来操作表格，看看如何向单元格里保存数据。
+
+
+
+```java
+public class ExcelFile {
+    public static final String PATH = "out\\WriteSheet.xlsx";
+
+    private final String mFilePath;
+    private final XSSFWorkbook mWorkbook;
+    private final XSSFSheet mSheet;
+    private int rowNum = 0;
+
+    public ExcelFile(String filePath) {
+        mFilePath = filePath;
+        mWorkbook = new XSSFWorkbook();
+        mSheet = mWorkbook.createSheet();
+    }
+
+    public void setTableTitle(String... names) {
+        XSSFRow row = mSheet.createRow(rowNum++);
+        for (int i = 0; i < names.length; i++) {
+            XSSFCell cell = row.createCell(i);
+            cell.setCellValue(names[i]);
+        }
+    }
+
+    public void setContent(String... contents) {
+        XSSFRow row = mSheet.createRow(rowNum++);
+        for (int i = 0; i < contents.length; i++) {
+            XSSFCell cell = row.createCell(i, CellType.STRING);
+            cell.setCellValue(contents[i]);
+        }
+    }
+
+    public void create() {
+        try (FileOutputStream fos = new FileOutputStream(mFilePath)) {
+            mWorkbook.write(fos);
+            mWorkbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 ```
 
 
+
+##### 读取 sheet
+
+
+
+##### 参考
+
+https://juejin.cn/post/6944188146796118052
+
+https://juejin.cn/post/6844903505501618190
 
 
 
@@ -625,8 +743,6 @@ dependencies{
     implementation group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
 }
 ```
-
-
 
 
 
