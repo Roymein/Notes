@@ -444,7 +444,9 @@ Child c = (Child) b;
 Child c = new Child();
 ````
 
-<img src="C:\Users\Roymein\Desktop\BooksAndNotes\Notes\res\java\image-20210424165649350.png" alt="image-20210424165649350" style="zoom:67%;" />
+
+
+<img src="../res/java/image-20210424165649350.png" style="zoom:67%;" />
 
 ### 3.4 继承是把双刃剑
 
