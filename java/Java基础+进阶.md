@@ -692,14 +692,52 @@ File中的路径可以存在，也可以不存在，通过new 创建一个File�
 
 #### 12.4.4 目录操作
 
-| 操作         | 方法      |
-| ------------ | --------- |
-| 创建单个目录 | mkdir     |
-| 创建多层目录 | mkdirs    |
-| 遍历子目录   | list      |
-| 遍历         | listFiles |
+| 操作         | 方法                                                        |
+| ------------ | ----------------------------------------------------------- |
+| 创建单个目录 | mkdir                                                       |
+| 创建多层目录 | mkdirs                                                      |
+| 遍历子目录   | list                                                        |
+| 遍历         | listFiles  返回的是直接子目录或文件，不会返回子目录下的文件 |
 
 
+
+```java
+public class FileDemo {
+       /**
+     * 查找文件
+     */
+    public static List<File> findFile(final File directory, final String fileName) {
+        ArrayList<File> files = new ArrayList<>();
+        for (File file : directory.listFiles()) {
+            if (file.isFile() && file.getName().equals(fileName)) {
+                files.add(new File(fileName));
+            } else if (file.isDirectory()){
+                files.addAll(findFile(file, fileName));
+            }
+        }
+        return files;
+    }
+
+    /**
+     * 统计文件大小
+     */
+    public static long sizeOf(final File directory) {
+        if (directory.isDirectory()) {
+            long size = 0;
+            for (File f : directory.listFiles()) {
+                if (f.isFile()) {
+                    size += f.length();
+                } else {
+                    size += sizeOf(directory);
+                }
+            }
+            return size;
+        } else {
+            return directory.length();
+        }
+    }
+}
+```
 
 
 
