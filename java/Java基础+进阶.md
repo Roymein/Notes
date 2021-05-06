@@ -635,6 +635,72 @@ Child c = new Child();
 
 ## 第十二章 文件基本技术
 
+### 12.1 文件概述
+
+
+
+### 12.2 二进制文件和字节流
+
+
+
+### 12.3 文本文件和字符流
+
+
+
+### 12.4 文件和目录操作
+
+> File既可表示文件，也可表示目录（directory）
+
+#### 12.4.1 构造方法
+
+```java
+//pathName 表示路径，可以是相对路径，也可以是绝对路径， windows下 \, linux 下为 /
+public File（String pathName）
+//parent表示父目录，child表示孩子
+public File（String pathName,String child）
+public File（File parent, String child）
+```
+
+File中的路径可以存在，也可以不存在，通过new 创建一个File对象，实际上不会创建一个文件，只是创建一个表示文件或目录的对象。
+
+#### 12.4.2 文件元数据
+
+文件的元数据主要包括
+
+| 元数据                                                   | 方法             |
+| -------------------------------------------------------- | ---------------- |
+| 文件名                                                   | getName          |
+| 是否是绝对路径                                           | isAbsolute       |
+| 完整路径（包括路径+文件名）                              | getPath          |
+| 绝对路径                                                 | getAbsolutePath  |
+| 标准的文件路径名（去掉路径中冗余的“，”，“..”）           | getCanonicalPath |
+| 父目录路径                                               | getParent        |
+| 父目录的File对象                                         | getParentFile    |
+| 返回一个新的File对象，getAbsolutePath返回值最为参数构造  | getAbsoluteFile  |
+| 返回一个新的File对象，getCanonicalPath返回值最为参数构造 | getCanonicalFile |
+
+#### 12.4.3 文件操作
+
+| 操作         | 方法                                                         |
+| ------------ | ------------------------------------------------------------ |
+| 创建文件     | createNewFile                                                |
+| 创建临时文件 | createTempFile（prefix，suffix） //前缀+后缀，prefix至少三个字符，suffix为null 默认为 .tmp , 目录不指定或为null，则为系统默认目录 |
+| 删除         | delte  //如果File是目录且不为空，则失败                      |
+| 删除         | deleteOnExit  将File对象加入到待删除列表，在JVM正常退出时进行实际删除 |
+| 重命名       | renameTo                                                     |
+|              |                                                              |
+
+#### 12.4.4 目录操作
+
+| 操作         | 方法      |
+| ------------ | --------- |
+| 创建单个目录 | mkdir     |
+| 创建多层目录 | mkdirs    |
+| 遍历子目录   | list      |
+| 遍历         | listFiles |
+
+
+
 
 
 ## 第十三章 文件高级技术
@@ -672,14 +738,6 @@ public class ExcelFile {
         mFilePath = filePath;
         mWorkbook = new XSSFWorkbook();
         mSheet = mWorkbook.createSheet();
-    }
-
-    public void setTableTitle(String... names) {
-        XSSFRow row = mSheet.createRow(rowNum++);
-        for (int i = 0; i < names.length; i++) {
-            XSSFCell cell = row.createCell(i);
-            cell.setCellValue(names[i]);
-        }
     }
 
     public void setContent(String... contents) {
