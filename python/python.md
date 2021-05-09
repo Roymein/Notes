@@ -142,3 +142,157 @@ from warnings import warn
 filterwarings（"ignore"）
 ```
 
+
+
+
+
+## 第九章 魔法方法、特性和迭代器
+
+### 9.1 魔法方法（特殊方法）
+
+
+
+### 9.2 特性
+
+类比 java 中的 set / get 。python 中用于存取方法，来获取封装状态变量。
+
+```python
+class C(object):
+    def getx(self): return self._x
+    def setx(self, value): self._x = value
+    def delx(self): del self._x
+    x = property(getx, setx, delx, "I'm the 'x' property.")
+```
+
+
+
+#### 9.2.1 静态方法和类方法
+
+静态方法：将其包装在 staticmethod 类的对象中，静态方法中没有参数 self，可直接通过类来调用。
+
+```python
+    def cal():
+        print()
+
+    cal = staticmethod(cal)
+```
+
+类方法：将其包装在 classmethod 类的对象中，类方法的定义中包含cls参数，对于类方法，可通过对象之间调用，但参数cls将自动关联到类。
+
+```python
+    def work(cls):
+        print("class method")
+
+    work = classmethod(work)
+```
+
+在 python2.4中引入 **装饰器** 的新语法，可用于这样包装方法。装饰器用于包装任何可调用的对象，并且可用于方法和函数。可指定一个或多个装饰器。
+
+使用装饰器描述特性
+
+```python
+class C(object):
+    @property
+    def x(self):
+        "I am the 'x' property."
+        return self._x
+    
+    @x.setter
+    def x(self, value):
+        self._x = value
+    
+    @x.deleter
+    def x(self):
+        del self._x
+```
+
+
+
+### 9.3 迭代器
+
+方法 __iter__ 返回一个迭代器，它是包含 __next__  对象，next 迭代器应返回下一个值，如果迭代器没有可供返回的值，应引发 StopIteration 异常。 next（）函数与 it.__next__() 等效。
+
+```python
+# 斐波那契数列
+class Fibs:
+
+    def __init__(self):
+        self.a = 0
+        self.b = 1
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b
+        return self.a
+
+    def __iter__(self):
+        return self
+    
+if __name__ == '__main__':
+    f = Fibs()
+    for i in Fibs():
+        print(i)
+        if i > 1000:
+            break
+
+    it = iter(Fibs())
+    print(next(it))
+```
+
+
+
+### 9.4 生成器
+
+包含 yield 语句的函数称为 **生成器**。生成器是**一种使用普通函数语法定义的迭代器**。生成器包含 yield 关键字的函数，但被调用时不会执行函数体内的代码，而是返回一个迭代器。每次请求值时，都将执行生成器的代码，直到遇到yield 或return。yield 意味着一个生成一个值，return 意味着生成器应停止执行。
+
+```python
+# 生成器实现斐波那契数列
+def fibs(n):
+    a = 0
+    b = 1
+    while n > 0:
+        a, b = b, a + b
+        n -= 1
+        yield b
+```
+
+
+
+
+
+```python
+# 遍历文件
+def lines(file):
+    for line in file:
+        yield line
+    yield "\n"
+
+
+def blocks(file):
+    block = []
+    for line in lines(file):
+        if line.strip():
+            block.append(line)
+        elif block:
+            yield "".join(block).strip()
+            block = []
+```
+
+
+
+#### 递归式生成器
+
+```python
+# 生成器生成数组中的元素 nested = [[1, 2], [3, 4], 5] 
+def flatten(nested):
+    try:
+        for sublist in nested:
+            for element in flatten(sublist):
+                yield element
+    except TypeError:
+        yield nested
+```
+
+调用flatten时，有两种可能基线条件和递归条件。在基线条件下，要求这个函数展开单个元素，然而如果要展开一个列表，就需要遍历所有的子列表并对他们调用flatten，然后使用另一个for循环生成展开所有的子列表中的所有元素。
+
+
+
